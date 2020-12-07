@@ -56,17 +56,23 @@ const mkQuery = (sqlStmt, pool) => {
 const SELECT_ALL_QUERY = mkQuery(SELECT_ALL, pool)
 const INSERT_NEW_QUERY = mkQuery(INSERT_NEW, pool)
 
-SELECT_ALL_QUERY()
-.then(data => {
-    console.info(data);
-}) 
-
 // app.use(express.static(`${__dirname}/client/src`))
 
-app.get('/api', (req, resp) => {
+app.get('/api/rsvp', async (req, resp) => {
+    const results = await SELECT_ALL_QUERY();
     resp.status(200)
-    resp.type('text/html')
-    resp.sendFile(`${__dirname}/index.html`)
+    resp.type('application/json')
+    resp.json(results)
+})
+
+app.post('/api/rsvp', async (req, resp) => {
+    //name, email, phone, status, createdBy, createdDt
+    const b = req.body
+    console.info(b.name)
+    await INSERT_NEW_QUERY([b.name, b.email, b.phone, b.status, b.createdBy, b.createdDt])
+    resp.status(200)
+    resp.type('application/json')
+    resp.json({})
 })
 
 // initalise the app
